@@ -16,15 +16,17 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
+@Slf4j()
 public class LogService {
 
     private final LogRepository logRepository;
 
     public APIResponse<LogDTO> findById(Long id) {
         Optional<Log> logOptional = logRepository.findById(id);
-        if (logOptional.isEmpty())
+        if (logOptional.isEmpty()) {
+            log.error("Log with id {} not found", id);
             return APIResponse.notFound(null, Constant.getLogResponseHashMap(), Constant.LOG_RESPONSE_CODE_PREFIX.concat("1"));
+        }
 
         Log log = logOptional.get();
 
@@ -35,9 +37,7 @@ public class LogService {
                 .level(log.getLevel())
                 .build();
 
-        throw new RuntimeException("Test exception");
-
-        //return APIResponse.ok(logDTO, Constant.getLogResponseHashMap(), Constant.LOG_RESPONSE_CODE_PREFIX.concat("6"));
+        return APIResponse.ok(logDTO, Constant.getLogResponseHashMap(), Constant.LOG_RESPONSE_CODE_PREFIX.concat("6"));
     }
 
     public APIResponse<List<LogDTO>> findAll() {
